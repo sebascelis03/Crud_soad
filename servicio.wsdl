@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions name="ServicioPacientes"
+    targetNamespace="http://localhost/actividad_final"
+    xmlns:tns="http://localhost/actividad_final"
+    xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+    xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/"
+    xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/"
+    xmlns="http://schemas.xmlsoap.org/wsdl/">
+
+    <message name="listarPacientesRequest"></message>
+    <message name="listarPacientesResponse">
+        <part name="resultado" type="xsd:string"/> </message>
+
+    <message name="registrarPacienteRequest">
+        <part name="cedula" type="xsd:string"/>
+        <part name="nombres" type="xsd:string"/>
+        <part name="apellidos" type="xsd:string"/>
+        <part name="telefono" type="xsd:string"/>
+        <part name="fecha_nacimiento" type="xsd:string"/>
+    </message>
+    <message name="registrarPacienteResponse">
+        <part name="resultado" type="xsd:string"/>
+    </message>
+
+    <message name="buscarPacienteRequest">
+        <part name="cedula" type="xsd:string"/>
+    </message>
+    <message name="buscarPacienteResponse">
+        <part name="resultado" type="xsd:string"/>
+    </message>
+
+    <message name="actualizarPacienteRequest">
+        <part name="cedula" type="xsd:string"/>
+        <part name="nombres" type="xsd:string"/>
+        <part name="apellidos" type="xsd:string"/>
+        <part name="telefono" type="xsd:string"/>
+        <part name="fecha_nacimiento" type="xsd:string"/>
+    </message>
+    <message name="actualizarPacienteResponse">
+        <part name="resultado" type="xsd:string"/>
+    </message>
+
+    <message name="eliminarPacienteRequest">
+        <part name="cedula" type="xsd:string"/>
+    </message>
+    <message name="eliminarPacienteResponse">
+        <part name="resultado" type="xsd:string"/>
+    </message>
+
+    <portType name="ServicioPacientesPortType">
+        <operation name="listarPacientes">
+            <input message="tns:listarPacientesRequest"/>
+            <output message="tns:listarPacientesResponse"/>
+        </operation>
+        <operation name="registrarPaciente">
+            <input message="tns:registrarPacienteRequest"/>
+            <output message="tns:registrarPacienteResponse"/>
+        </operation>
+        <operation name="buscarPaciente">
+            <input message="tns:buscarPacienteRequest"/>
+            <output message="tns:buscarPacienteResponse"/>
+        </operation>
+        <operation name="actualizarPaciente">
+            <input message="tns:actualizarPacienteRequest"/>
+            <output message="tns:actualizarPacienteResponse"/>
+        </operation>
+        <operation name="eliminarPaciente">
+            <input message="tns:eliminarPacienteRequest"/>
+            <output message="tns:eliminarPacienteResponse"/>
+        </operation>
+    </portType>
+
+    <binding name="ServicioPacientesBinding" type="tns:ServicioPacientesPortType">
+        <soap:binding style="rpc" transport="http://schemas.xmlsoap.org/soap/http"/>
+        
+        <operation name="listarPacientes">
+            <soap:operation soapAction="urn:listarPacientes"/>
+            <input><soap:body use="encoded" namespace="urn:ginpac" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/></input>
+            <output><soap:body use="encoded" namespace="urn:ginpac" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/></output>
+        </operation>
+
+        <operation name="registrarPaciente">
+            <soap:operation soapAction="urn:registrarPaciente"/>
+            <input><soap:body use="encoded" namespace="urn:ginpac" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/></input>
+            <output><soap:body use="encoded" namespace="urn:ginpac" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/></output>
+        </operation>
+        
+        <operation name="buscarPaciente">
+            <soap:operation soapAction="urn:buscarPaciente"/>
+            <input><soap:body use="encoded" namespace="urn:ginpac" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/></input>
+            <output><soap:body use="encoded" namespace="urn:ginpac" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/></output>
+        </operation>
+        
+        <operation name="actualizarPaciente">
+            <soap:operation soapAction="urn:actualizarPaciente"/>
+            <input><soap:body use="encoded" namespace="urn:ginpac" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/></input>
+            <output><soap:body use="encoded" namespace="urn:ginpac" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/></output>
+        </operation>
+        
+        <operation name="eliminarPaciente">
+            <soap:operation soapAction="urn:eliminarPaciente"/>
+            <input><soap:body use="encoded" namespace="urn:ginpac" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/></input>
+            <output><soap:body use="encoded" namespace="urn:ginpac" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/></output>
+        </operation>
+    </binding>
+
+    <service name="ServicioPacientesService">
+        <port name="ServicioPacientesPort" binding="tns:ServicioPacientesBinding">
+            <soap:address location="http://localhost/actividad_final/server.php"/>
+        </port>
+    </service>
+</definitions>

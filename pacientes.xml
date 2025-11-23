@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<pacientes>
+  <paciente>
+    <cedula>1001</cedula>
+    <nombres>Pepito</nombres>
+    <apellidos>Perez</apellidos>
+    <telefono>3001234567</telefono>
+    <fecha_nacimiento>1990-05-20</fecha_nacimiento>
+  </paciente>
+  <paciente>
+    <cedula>54562986</cedula>
+    <nombres>Bairon</nombres>
+    <apellidos>Ardilla</apellidos>
+    <telefono>554269523</telefono>
+    <fecha_nacimiento>2001-04-11</fecha_nacimiento>
+  </paciente>
+</pacientes>
