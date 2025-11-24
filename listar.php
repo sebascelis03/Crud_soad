@@ -39,6 +39,18 @@ if ($client) {
     $jsonResponse = $svc->listarPacientes();
     $pacientes = json_decode($jsonResponse, true);
 }
+
+
+// FILTRADO: Buscar por cédula, nombres o apellidos
+$busqueda = trim($_GET['q'] ?? '');
+if ($busqueda !== '') {
+    $pacientes = array_filter($pacientes, function($p) use ($busqueda) {
+        $busqueda = mb_strtolower($busqueda);
+        return str_contains(mb_strtolower($p['cedula'] ?? ''), $busqueda) ||
+            str_contains(mb_strtolower($p['nombres'] ?? ''), $busqueda) ||
+            str_contains(mb_strtolower($p['apellidos'] ?? ''), $busqueda);
+    });
+}
 ?>
 
 <!DOCTYPE html>
@@ -70,13 +82,54 @@ if ($client) {
 </head>
 <body class="bg-gray-50 p-8">
 
+
+<nav class="bg-blue-600 text-white shadow-md w-full fixed top-0 left-0 z-50">
+    <div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
+
+        <h1 class="text-2xl font-bold">CLINICA-SOAPS</h1>
+        <div class="space-x-4">
+            <a href="index.php" class="bg-white text-blue-600 font-semibold py-2 px-4 rounded hover:bg-gray-100 transition">
+                Inicio
+            </a>
+
+            <a href="crear.php" class="bg-white text-blue-600 font-semibold py-2 px-4 rounded hover:bg-gray-100 transition">
+                Agregar Paciente
+            </a>
+        </div>
+    </div>
+</nav>
+
+
+
+
+
+<div class="h-20"></div>
+
+
+
     <div class="max-w-6xl mx-auto bg-white p-8 rounded-xl shadow-2xl">
         <div class="flex justify-between items-center mb-8 border-b pb-4">
             <h2 class="text-3xl font-extrabold text-gray-900">Listado de Pacientes</h2>
-            <a href="index.php" class="bg-gray-600 hover:bg-gray-700 text-white font-semibold py-2 px-4 rounded-lg transition duration-150 ease-in-out shadow-md">
-                Volver al Inicio
-            </a>
         </div>
+
+<div class="mt-4 mb-4 flex justify-end">
+    <form method="GET" action="listar.php" class="flex space-x-2">
+        <input 
+            type="text" 
+            name="q" 
+            placeholder="Buscar por cédula, nombre o apellido" 
+            value="<?php echo htmlspecialchars($_GET['q'] ?? ''); ?>" 
+            class="border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
+        >
+        <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition">
+            🔍 Buscar
+        </button>
+        <a href="listar.php" class="bg-gray-300 text-gray-700 px-4 py-2 rounded hover:bg-gray-400 transition">
+            ❌ Limpiar
+        </a>
+    </form>
+</div>
+
 
         <?php if (isset($soap_error)): ?>
             <div role="alert" class="bg-yellow-100 border border-yellow-400 text-yellow-700 px-4 py-3 rounded relative mb-4">
