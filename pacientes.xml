@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 <?xml version="1.0" encoding="UTF-8"?>
 <pacientes>
   <paciente>
@@ -22,3 +23,5 @@
     <fecha_nacimiento>2003-02-19</fecha_nacimiento>
   </paciente>
 </pacientes>
+=======
+>>>>>>> 4cd9bd7 (Mejora seguridad: sanitización de datos, manejo de excepciones SOAP y protección XSS en editar.php)

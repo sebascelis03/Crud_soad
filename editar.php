@@ -12,11 +12,12 @@ if (class_exists('SoapClient')) {
 }
 
 // A. Si llegamos aquí para GUARDAR cambios (POST)
+
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $cedula = $_POST['cedula'];
-    $nombres = $_POST['nombres'];
-    $apellidos = $_POST['apellidos'];
-    $telefono = $_POST['telefono'];
+    $cedula = filter_var($_POST['cedula'], FILTER_SANITIZE_NUMBER_INT);
+    $nombres = htmlspecialchars(trim($_POST['nombres']));
+    $apellidos = htmlspecialchars(trim($_POST['apellidos']));
+    $telefono = htmlspecialchars(trim($_POST['telefono']));
     $fecha_nacimiento = $_POST['fecha_nacimiento'];
 
     // Llamamos a la función de actualizar (RF-04)
@@ -29,6 +30,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $svc->actualizarPaciente($cedula, $nombres, $apellidos, $telefono, $fecha_nacimiento);
     }
 
+    try{
+    $client->actualizarPaciente($cedula, $nombres, $apellidos, $telefono, $fecha_nacimiento);
+    } catch (Exception $e) {
+        die("Error actualizar paciente: " . $e->getMessage());
+    }
+    
     header("Location: listar.php");
     exit();
 }
@@ -43,13 +50,23 @@ if (!isset($_GET['cedula'])) {
 $cedula_editar = $_GET['cedula'];
 
 // Buscamos los datos actuales de ese paciente (RF-02)
-// Intentamos por SOAP, si no hay cliente usamos REST local
+// Buscamos los datos actuales de ese paciente (RF-02)
 $paciente = null;
+
+// Intentamos buscar por SOAP con manejo de excepciones
 if (isset($client) && $client) {
-    $jsonResponse = $client->buscarPaciente($cedula_editar);
-    $paciente = json_decode($jsonResponse, true); // Convertimos JSON a Array
-} else {
-    // Fallback local para buscar
+    try {
+        $jsonResponse = $client->buscarPaciente($cedula_editar);
+        $paciente = json_decode($jsonResponse, true);
+    } catch (Exception $e) {
+        // Si SOAP falla, mostrar error y permitir fallback
+        error_log("Error SOAP buscarPaciente: " . $e->getMessage());
+        $paciente = null;
+    }
+}
+
+// Si SOAP no funcionó o no devolvió resultado, usar fallback local
+if (!$paciente) {
     require_once __DIR__ . '/ServicioPacientes.php';
     $svc = new ServicioPacientes();
     $jsonResponse = $svc->buscarPaciente($cedula_editar);
