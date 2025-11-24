@@ -45,7 +45,7 @@ $pacientes = json_decode($jsonResponse, true);
         <div class="flex justify-between items-center mb-6">
             <h2 class="text-2xl font-bold text-gray-800">Listado de Pacientes</h2>
             <a href="index.php" class="bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded">
-                🏠 Volver al Inicio
+                    Volver al Inicio
             </a>
         </div>
 
@@ -71,7 +71,7 @@ $pacientes = json_decode($jsonResponse, true);
                             <td class="py-3 px-4"><?php echo $p['telefono']; ?></td>
                             <td class="py-3 px-4"><?php echo $p['fecha_nacimiento']; ?></td>
                             <td class="py-3 px-4 text-center space-x-2">
-                                <a href="editar.php?cedula=<?php echo $p['cedula']; ?>" class="bg-yellow-500 hover:bg-yellow-600 text-white py-1 px-3 rounded text-sm">
+                                <a href="editar.php?cedula=<?php echo $p['cedula']; ?>" class="bg-blue-500 hover:bg-yellow-600 text-white py-1 px-3 rounded text-sm">
                                     Editar
                                 </a>
                                 <button onclick="confirmarEliminacion('<?php echo $p['cedula']; ?>')" class="bg-red-500 hover:bg-red-600 text-white py-1 px-3 rounded text-sm">
