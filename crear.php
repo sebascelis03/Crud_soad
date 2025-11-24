@@ -46,6 +46,26 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 </head>
 <body class="bg-gray-100 p-8">
 
+<!-- Barra superior / Navbar completa -->
+<nav class="bg-blue-600 text-white shadow-md w-full fixed top-0 left-0 z-50">
+    <div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
+        <!-- Título -->
+        <h1 class="text-2xl font-bold">CLINICA-SOAP</h1>
+
+        <!-- Botones -->
+        <div class="space-x-4">
+            <a href="index.php" class="bg-white text-blue-600 font-semibold py-2 px-4 rounded hover:bg-gray-100 transition">
+                Inicio
+            </a>
+        
+        </div>
+    </div>
+</nav>
+
+<!-- Spacer para que el contenido no quede debajo del navbar -->
+<div class="h-20"></div>
+
+
     <div class="max-w-lg mx-auto bg-white p-6 rounded-lg shadow-lg">
         <h2 class="text-2xl font-bold text-gray-800 mb-6">Registrar Nuevo Paciente</h2>
 
