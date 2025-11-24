@@ -51,55 +51,81 @@ if ($client) {
         // Función para confirmar antes de borrar (Requisito RF-10)
         function confirmarEliminacion(cedula) {
             if (confirm("¿Está seguro de que desea eliminar al paciente con cédula " + cedula + "?")) {
-                window.location.href = "listar.php?eliminar_cedula=" + cedula;
+                //formilario POST
+                const form = document.createElement('input');
+                form.method = 'POST';
+                form.action = 'listar.php';
+
+                const input = document.createElement('input');
+                input.type = 'hiden';
+                input.name = 'eliminar_cedula';
+                input.value = cedula;
+                
+                form.appendChild(input);
+                document.body.appendChild(form);
+                form.submit();
             }
         }
     </script>
 </head>
-<body class="bg-gray-100 p-8">
+<body class="bg-gray-50 p-8">
 
-    <div class="max-w-5xl mx-auto bg-white p-6 rounded-lg shadow-lg">
-        <div class="flex justify-between items-center mb-6">
-            <h2 class="text-2xl font-bold text-gray-800">Listado de Pacientes</h2>
-            <a href="index.php" class="bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded">
-                    Volver al Inicio
+    <div class="max-w-6xl mx-auto bg-white p-8 rounded-xl shadow-2xl">
+        <div class="flex justify-between items-center mb-8 border-b pb-4">
+            <h2 class="text-3xl font-extrabold text-gray-900">Listado de Pacientes</h2>
+            <a href="index.php" class="bg-gray-600 hover:bg-gray-700 text-white font-semibold py-2 px-4 rounded-lg transition duration-150 ease-in-out shadow-md">
+                Volver al Inicio
             </a>
         </div>
 
-        <div class="overflow-x-auto">
-            <table class="min-w-full bg-white border border-gray-200">
-                <thead>
-                    <tr class="bg-blue-600 text-white">
-                        <th class="py-3 px-4 text-left">Cédula</th>
-                        <th class="py-3 px-4 text-left">Nombres</th>
-                        <th class="py-3 px-4 text-left">Apellidos</th>
-                        <th class="py-3 px-4 text-left">Teléfono</th>
-                        <th class="py-3 px-4 text-left">F. Nacimiento</th>
-                        <th class="py-3 px-4 text-center">Acciones</th>
+        <?php if (isset($soap_error)): ?>
+            <div role="alert" class="bg-yellow-100 border border-yellow-400 text-yellow-700 px-4 py-3 rounded relative mb-4">
+                <strong>Advertencia:</strong> <?php echo $soap_error; ?> Usando modo de fallback.
+            </div>
+        <?php endif; ?>
+        
+        <?php if (!empty($error_listar)): ?>
+            <div role="alert" class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4">
+                <strong>Error:</strong> <?php echo $error_listar; ?>
+            </div>
+        <?php endif; ?>
+
+        <div class="overflow-x-auto shadow-lg rounded-lg">
+            <table class="min-w-full divide-y divide-gray-200">
+                <thead class="bg-blue-600 text-white">
+                    <tr>
+                        <th class="py-3 px-4 text-left text-sm font-medium uppercase tracking-wider rounded-tl-lg">Cédula</th>
+                        <th class="py-3 px-4 text-left text-sm font-medium uppercase tracking-wider">Nombres</th>
+                        <th class="py-3 px-4 text-left text-sm font-medium uppercase tracking-wider">Apellidos</th>
+                        <th class="py-3 px-4 text-left text-sm font-medium uppercase tracking-wider">Teléfono</th>
+                        <th class="py-3 px-4 text-left text-sm font-medium uppercase tracking-wider">F. Nacimiento</th>
+                        <th class="py-3 px-4 text-center text-sm font-medium uppercase tracking-wider rounded-tr-lg">Acciones</th>
                     </tr>
                 </thead>
-                <tbody class="text-gray-700">
+                <tbody class="bg-white divide-y divide-gray-200">
                     <?php if (count($pacientes) > 0): ?>
                         <?php foreach ($pacientes as $p): ?>
-                        <tr class="border-b hover:bg-gray-50">
-                            <td class="py-3 px-4"><?php echo $p['cedula']; ?></td>
-                            <td class="py-3 px-4"><?php echo $p['nombres']; ?></td>
-                            <td class="py-3 px-4"><?php echo $p['apellidos']; ?></td>
-                            <td class="py-3 px-4"><?php echo $p['telefono']; ?></td>
-                            <td class="py-3 px-4"><?php echo $p['fecha_nacimiento']; ?></td>
-                            <td class="py-3 px-4 text-center space-x-2">
-                                <a href="editar.php?cedula=<?php echo $p['cedula']; ?>" class="bg-blue-500 hover:bg-yellow-600 text-white py-1 px-3 rounded text-sm">
-                                    Editar
+                        <tr class="hover:bg-gray-50 transition duration-150 ease-in-out">
+                            <td class="py-3 px-4 whitespace-nowrap"><?php echo htmlspecialchars($p['cedula'] ?? ''); ?></td>
+                            <td class="py-3 px-4 whitespace-nowrap"><?php echo htmlspecialchars($p['nombres'] ?? ''); ?></td>
+                            <td class="py-3 px-4 whitespace-nowrap"><?php echo htmlspecialchars($p['apellidos'] ?? ''); ?></td>
+                            <td class="py-3 px-4 whitespace-nowrap"><?php echo htmlspecialchars($p['telefono'] ?? ''); ?></td>
+                            <td class="py-3 px-4 whitespace-nowrap"><?php echo htmlspecialchars($p['fecha_nacimiento'] ?? ''); ?></td>
+                            <td class="py-3 px-4 text-center whitespace-nowrap space-x-2">
+                                <a href="editar.php?cedula=<?php echo urlencode($p['cedula'] ?? ''); ?>" class="bg-blue-500 hover:bg-blue-600 text-white py-1.5 px-3 rounded-full text-sm font-medium shadow-sm hover:shadow-md transition duration-150">
+                                    ✏️ Editar
                                 </a>
-                                <button onclick="confirmarEliminacion('<?php echo $p['cedula']; ?>')" class="bg-red-500 hover:bg-red-600 text-white py-1 px-3 rounded text-sm">
-                                    Eliminar
+                                <button onclick="confirmarEliminacion('<?php echo htmlspecialchars($p['cedula'] ?? ''); ?>')" class="bg-red-500 hover:bg-red-600 text-white py-1.5 px-3 rounded-full text-sm font-medium shadow-sm hover:shadow-md transition duration-150">
+                                    🗑️ Eliminar
                                 </button>
                             </td>
                         </tr>
                         <?php endforeach; ?>
                     <?php else: ?>
                         <tr>
-                            <td colspan="6" class="py-4 text-center text-gray-500">No hay pacientes registrados.</td>
+                            <td colspan="6" class="py-6 text-center text-gray-500 text-lg">
+                                No hay pacientes registrados.
+                            </td>
                         </tr>
                     <?php endif; ?>
                 </tbody>

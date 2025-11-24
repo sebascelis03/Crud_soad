@@ -11,6 +11,7 @@ class ServicioPacientes {
         $dom->loadXML($xml->asXML());
         $dom->save($this->archivoXml);
     }
+    
 
     // RF-03: Listar Pacientes
     public function listarPacientes() {
