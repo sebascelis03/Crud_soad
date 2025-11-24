@@ -14,4 +14,11 @@
     <telefono>554269523</telefono>
     <fecha_nacimiento>2001-04-11</fecha_nacimiento>
   </paciente>
+  <paciente>
+    <cedula>1005026054</cedula>
+    <nombres>Melanny </nombres>
+    <apellidos>Guate</apellidos>
+    <telefono>3204739882</telefono>
+    <fecha_nacimiento>2003-02-19</fecha_nacimiento>
+  </paciente>
 </pacientes>

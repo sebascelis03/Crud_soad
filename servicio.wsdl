@@ -107,7 +107,7 @@
 
     <service name="ServicioPacientesService">
         <port name="ServicioPacientesPort" binding="tns:ServicioPacientesBinding">
-            <soap:address location="http://localhost/actividad_final/server.php"/>
+            <soap:address location="http://127.0.0.1:8000/server.php"/>
         </port>
     </service>
 </definitions>

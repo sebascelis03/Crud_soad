@@ -1,18 +1,26 @@
 <?php
-if (!isset($_SERVER['HTTP_REFERER'])) {
-    header("Location: index.php");
-    exit();
+// Configuración del Cliente SOAP (usar WSDL local)
+$wsdl = __DIR__ . '/servicio.wsdl';
+$client = null;
+if (class_exists('SoapClient')) {
+    try {
+        $client = new SoapClient($wsdl);
+    } catch (Exception $e) {
+        error_log("SoapClient error: " . $e->getMessage());
+        $client = null; // Mantener valor para evitar errores fatales; comprobamos más abajo
+    }
 }
-// Configuración del Cliente SOAP
-// OJO: Asegúrate que la ruta sea correcta hacia TU archivo wsdl
-$wsdl = "http://localhost/actividad_final/servicio.wsdl";
-$client = new SoapClient($wsdl);
 
 // Lógica para ELIMINAR (si se presionó el botón de borrar)
 if (isset($_GET['eliminar_cedula'])) {
     $cedula = $_GET['eliminar_cedula'];
-    // Llamamos a la función del servidor
-    $respuesta = $client->eliminarPaciente($cedula);
+    // Llamamos a la función del servidor (SOAP o REST fallback)
+    if ($client) {
+        $respuesta = $client->eliminarPaciente($cedula);
+    } else {
+        $api = 'http://127.0.0.1:8000/server.php';
+        @file_get_contents($api . '?action=eliminar&cedula=' . urlencode($cedula));
+    }
     // Recargamos la página para ver el cambio
     header("Location: listar.php");
     exit();
@@ -20,8 +28,17 @@ if (isset($_GET['eliminar_cedula'])) {
 
 // Lógica para LISTAR (Pedimos los datos al servidor)
 // El servidor nos devuelve un JSON (texto), así que lo convertimos a array PHP
-$jsonResponse = $client->listarPacientes();
-$pacientes = json_decode($jsonResponse, true);
+$pacientes = [];
+if ($client) {
+    $jsonResponse = $client->listarPacientes();
+    $pacientes = json_decode($jsonResponse, true);
+} else {
+    // Fallback local: instanciamos la clase directamente para evitar llamadas HTTP recursivas
+    require_once __DIR__ . '/ServicioPacientes.php';
+    $svc = new ServicioPacientes();
+    $jsonResponse = $svc->listarPacientes();
+    $pacientes = json_decode($jsonResponse, true);
+}
 ?>
 
 <!DOCTYPE html>

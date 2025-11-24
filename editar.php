@@ -1,10 +1,15 @@
 <?php
-if (!isset($_SERVER['HTTP_REFERER'])) {
-    header("Location: index.php");
-    exit();
+// Configuración del Cliente SOAP (usar WSDL local)
+$wsdl = __DIR__ . '/servicio.wsdl';
+$client = null;
+if (class_exists('SoapClient')) {
+    try {
+        $client = new SoapClient($wsdl);
+    } catch (Exception $e) {
+        error_log("SoapClient error: " . $e->getMessage());
+        $client = null;
+    }
 }
-$wsdl = "http://localhost/actividad_final/servicio.wsdl";
-$client = new SoapClient($wsdl);
 
 // A. Si llegamos aquí para GUARDAR cambios (POST)
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
@@ -15,8 +20,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $fecha_nacimiento = $_POST['fecha_nacimiento'];
 
     // Llamamos a la función de actualizar (RF-04)
-    $client->actualizarPaciente($cedula, $nombres, $apellidos, $telefono, $fecha_nacimiento);
-    
+    if (isset($client) && $client) {
+        $client->actualizarPaciente($cedula, $nombres, $apellidos, $telefono, $fecha_nacimiento);
+    } else {
+        // Fallback local para actualizar
+        require_once __DIR__ . '/ServicioPacientes.php';
+        $svc = new ServicioPacientes();
+        $svc->actualizarPaciente($cedula, $nombres, $apellidos, $telefono, $fecha_nacimiento);
+    }
+
     header("Location: listar.php");
     exit();
 }
@@ -31,8 +43,18 @@ if (!isset($_GET['cedula'])) {
 $cedula_editar = $_GET['cedula'];
 
 // Buscamos los datos actuales de ese paciente (RF-02)
-$jsonResponse = $client->buscarPaciente($cedula_editar);
-$paciente = json_decode($jsonResponse, true); // Convertimos JSON a Array
+// Intentamos por SOAP, si no hay cliente usamos REST local
+$paciente = null;
+if (isset($client) && $client) {
+    $jsonResponse = $client->buscarPaciente($cedula_editar);
+    $paciente = json_decode($jsonResponse, true); // Convertimos JSON a Array
+} else {
+    // Fallback local para buscar
+    require_once __DIR__ . '/ServicioPacientes.php';
+    $svc = new ServicioPacientes();
+    $jsonResponse = $svc->buscarPaciente($cedula_editar);
+    $paciente = $jsonResponse ? json_decode($jsonResponse, true) : null;
+}
 
 // Si no existe, volvemos
 if (!$paciente) {
@@ -81,7 +103,7 @@ if (!$paciente) {
 
             <div class="flex justify-between pt-4">
                 <a href="listar.php" class="bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded">Cancelar</a>
-                <button type="submit" class="bg-yellow-500 hover:bg-yellow-600 text-white font-bold py-2 px-4 rounded">Actualizar Datos</button>
+                <button type="submit" class="bg-blue-500 hover:bg-blue-500 text-white font-bold py-2 px-4 rounded">Actualizar Datos</button>
             </div>
         </form>
     </div>

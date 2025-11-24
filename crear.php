@@ -1,13 +1,18 @@
 <?php
-if (!isset($_SERVER['HTTP_REFERER'])) {
-    header("Location: index.php");
-    exit();
-}
 // Lógica para GUARDAR el nuevo paciente
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    // 1. Conexión al Cliente SOAP
-    $wsdl = "http://localhost/actividad_final/servicio.wsdl";
-    $client = new SoapClient($wsdl);
+    // 1. Conexión al Cliente SOAP (usar WSDL local) — proteger si no hay extensión SOAP
+    $wsdl = __DIR__ . '/servicio.wsdl';
+    $client = null;
+    if (class_exists('SoapClient')) {
+        try {
+            $client = new SoapClient($wsdl);
+        } catch (Exception $e) {
+            // Mostrar error leve para debugging y seguir con fallback REST
+            error_log("SoapClient error: " . $e->getMessage());
+            $client = null;
+        }
+    }
 
     // 2. Recogemos los datos del formulario
     $cedula = $_POST['cedula'];
@@ -17,8 +22,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $fecha_nacimiento = $_POST['fecha_nacimiento'];
 
     // 3. Enviamos la orden al servidor (RF-01)
-    $respuesta = $client->registrarPaciente($cedula, $nombres, $apellidos, $telefono, $fecha_nacimiento);
-    
+    if (isset($client) && $client) {
+        $respuesta = $client->registrarPaciente($cedula, $nombres, $apellidos, $telefono, $fecha_nacimiento);
+    } else {
+        // Fallback local: instanciamos la clase directamente
+        require_once __DIR__ . '/ServicioPacientes.php';
+        $svc = new ServicioPacientes();
+        $svc->registrarPaciente($cedula, $nombres, $apellidos, $telefono, $fecha_nacimiento);
+    }
+
     // 4. Volvemos a la lista para ver el resultado
     header("Location: listar.php");
     exit();
